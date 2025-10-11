@@ -17,6 +17,14 @@ import java.time.Instant;
 public abstract class AbstractAuditingEntity<T> {
     public abstract T getId();
 
+    private boolean deleted = false;
+
+    @Column(name = "deleted_by")
+    private String deletedBy;
+
+    @Column(name = "deleted_date")
+    private Instant deletedDate;
+
     @Column(name = "created_by", updatable = false)
     private String createdBy;
 
@@ -39,5 +47,10 @@ public abstract class AbstractAuditingEntity<T> {
     public void preUpdate() {
         this.lastModifiedBy = "system";
         this.lastModifiedDate = Instant.now();
+
+        if (this.deleted && this.deletedDate == null) {
+            this.deletedBy = "system";
+            this.deletedDate = Instant.now();
+        }
     }
 }
