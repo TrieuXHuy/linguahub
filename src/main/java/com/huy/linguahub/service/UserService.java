@@ -90,12 +90,6 @@ public class UserService {
         return resultPaginationDTO;
     }
 
-    public ResGetUserDTO getUserById(Long id) {
-        User userDB = this.userRepository.findById(id).orElseThrow();
-
-        return toGetUserDTO(userDB);
-    }
-
     public ResGetUserDTO toGetUserDTO(User user) {
         return ResGetUserDTO.builder()
                 .id(user.getId())
@@ -111,6 +105,10 @@ public class UserService {
                 .lastModifiedBy(user.getLastModifiedBy())
                 .lastModifiedDate(user.getLastModifiedDate())
                 .build();
+    }
+
+    public User getUserByUsername(String username) {
+        return this.userRepository.findByEmail(username);
     }
 
     public void deleteUserById(User userDB) {

@@ -1,5 +1,7 @@
 package com.huy.linguahub.controller;
 
+import com.huy.linguahub.controller.error.ResourceAlreadyExistsException;
+import com.huy.linguahub.controller.error.ResourceNotFoundException;
 import com.huy.linguahub.domain.User;
 import com.huy.linguahub.repository.UserRepository;
 import com.huy.linguahub.service.UserService;
@@ -7,8 +9,6 @@ import com.huy.linguahub.service.dto.response.filter.ResultPaginationDTO;
 import com.huy.linguahub.service.dto.response.user.ResCreateUserDTO;
 import com.huy.linguahub.service.dto.response.user.ResGetUserDTO;
 import com.huy.linguahub.service.dto.response.user.ResUpdateUserDTO;
-import com.huy.linguahub.controller.error.ResourceAlreadyExistsException;
-import com.huy.linguahub.controller.error.ResourceNotFoundException;
 import com.turkraft.springfilter.boot.Filter;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Pageable;
