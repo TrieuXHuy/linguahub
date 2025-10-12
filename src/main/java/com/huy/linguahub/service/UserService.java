@@ -91,7 +91,7 @@ public class UserService {
         return toGetUserDTO(userDB);
     }
 
-    private GetUserDTO toGetUserDTO(User user) {
+    public GetUserDTO toGetUserDTO(User user) {
         return GetUserDTO.builder()
                 .id(user.getId())
                 .email(user.getEmail())
@@ -108,8 +108,7 @@ public class UserService {
                 .build();
     }
 
-    public void deleteUserById(Long id) {
-        User userDB = this.userRepository.findById(id).orElseThrow();
+    public void deleteUserById(User userDB) {
         userDB.setDeleted(true);
         this.userRepository.save(userDB);
     }

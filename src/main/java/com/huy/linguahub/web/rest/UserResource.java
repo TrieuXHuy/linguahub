@@ -32,7 +32,7 @@ public class UserResource {
     @PostMapping("/users")
     public ResponseEntity<CreateUserDTO> createUser(@Valid @RequestBody User reqUser) throws ResourceAlreadyExistsException {
         String email = reqUser.getEmail();
-        if(email.isEmpty() && this.userRepository.existsByEmail(email)) {
+        if(this.userRepository.existsByEmail(email)) {
             throw new ResourceAlreadyExistsException("Email already exists!");
         }
         return ResponseEntity.status(HttpStatus.CREATED).body(this.userService.createUser(reqUser));
@@ -49,26 +49,29 @@ public class UserResource {
     }
 
     @GetMapping("/users")
-    public ResponseEntity<ResultPaginationDTO> getAllUsers(@Filter Specification<User> spec, Pageable pageable) {
-
+    public ResponseEntity<ResultPaginationDTO> getAllUsers(@Filter Specification<User> specUser, Pageable pageable) {
+        Specification<User> spec = specUser.and((root, query, cb) -> cb.equal(root.get("deleted"), false));
         return ResponseEntity.ok(this.userService.getAllUsers(spec, pageable));
     }
 
     @GetMapping("/users/{id}")
     public ResponseEntity<GetUserDTO> getUserById(@PathVariable Long id) throws ResourceNotFoundException {
-        if(!this.userRepository.existsById(id)) {
+        User userDB = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        if(userDB.isDeleted()) {
             throw new ResourceNotFoundException("User not found!");
         }
-
-        return ResponseEntity.ok(this.userService.getUserById(id));
+        return ResponseEntity.ok(this.userService.toGetUserDTO(userDB));
     }
 
     @DeleteMapping("/users/{id}")
     public ResponseEntity<Void> deleteUserById(@PathVariable Long id) throws ResourceNotFoundException {
-        if(!this.userRepository.existsById(id)) {
+        User userDB = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        if(userDB.isDeleted()) {
             throw new ResourceNotFoundException("User not found!");
         }
-        this.userService.deleteUserById(id);
+        this.userService.deleteUserById(userDB);
         return ResponseEntity.ok().build();
     }
 }

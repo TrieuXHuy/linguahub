@@ -31,7 +31,7 @@ public class GlobalException {
                 .map(err -> err.getField() + ": " + err.getDefaultMessage())
                 .toList();
 
-        Object message = errors.size() == 1 ? errors.get(0) : errors;
+        Object message = errors.size() == 1 ? errors.getFirst() : errors;
 
         ErrorDTO errorDTO = ErrorDTO.builder()
                 .timestamp(Instant.now())
