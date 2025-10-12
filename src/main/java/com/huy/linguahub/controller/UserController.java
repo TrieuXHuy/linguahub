@@ -1,14 +1,14 @@
-package com.huy.linguahub.web.rest;
+package com.huy.linguahub.controller;
 
 import com.huy.linguahub.domain.User;
 import com.huy.linguahub.repository.UserRepository;
 import com.huy.linguahub.service.UserService;
 import com.huy.linguahub.service.dto.response.filter.ResultPaginationDTO;
-import com.huy.linguahub.service.dto.response.user.CreateUserDTO;
-import com.huy.linguahub.service.dto.response.user.GetUserDTO;
-import com.huy.linguahub.service.dto.response.user.UpdateUserDTO;
-import com.huy.linguahub.web.rest.errors.ResourceAlreadyExistsException;
-import com.huy.linguahub.web.rest.errors.ResourceNotFoundException;
+import com.huy.linguahub.service.dto.response.user.ResCreateUserDTO;
+import com.huy.linguahub.service.dto.response.user.ResGetUserDTO;
+import com.huy.linguahub.service.dto.response.user.ResUpdateUserDTO;
+import com.huy.linguahub.controller.error.ResourceAlreadyExistsException;
+import com.huy.linguahub.controller.error.ResourceNotFoundException;
 import com.turkraft.springfilter.boot.Filter;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Pageable;
@@ -18,19 +18,19 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1")
-public class UserResource {
+@RequestMapping("/api")
+public class UserController {
 
     private final UserService userService;
     private final UserRepository userRepository;
 
-    public UserResource(UserService userService, UserRepository userRepository) {
+    public UserController(UserService userService, UserRepository userRepository) {
         this.userService = userService;
         this.userRepository = userRepository;
     }
 
     @PostMapping("/users")
-    public ResponseEntity<CreateUserDTO> createUser(@Valid @RequestBody User reqUser) throws ResourceAlreadyExistsException {
+    public ResponseEntity<ResCreateUserDTO> createUser(@Valid @RequestBody User reqUser) throws ResourceAlreadyExistsException {
         String email = reqUser.getEmail();
         if(this.userRepository.existsByEmail(email)) {
             throw new ResourceAlreadyExistsException("Email already exists!");
@@ -39,7 +39,7 @@ public class UserResource {
     }
 
     @PutMapping("/users")
-    public ResponseEntity<UpdateUserDTO> updateUser(@RequestBody User reqUser) throws ResourceNotFoundException {
+    public ResponseEntity<ResUpdateUserDTO> updateUser(@RequestBody User reqUser) throws ResourceNotFoundException {
         User userDB = userRepository.findById(reqUser.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         if(userDB.isDeleted()) {
@@ -55,7 +55,7 @@ public class UserResource {
     }
 
     @GetMapping("/users/{id}")
-    public ResponseEntity<GetUserDTO> getUserById(@PathVariable Long id) throws ResourceNotFoundException {
+    public ResponseEntity<ResGetUserDTO> getUserById(@PathVariable Long id) throws ResourceNotFoundException {
         User userDB = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         if(userDB.isDeleted()) {

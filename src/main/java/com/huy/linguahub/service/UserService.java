@@ -4,12 +4,13 @@ import com.huy.linguahub.domain.User;
 import com.huy.linguahub.repository.UserRepository;
 import com.huy.linguahub.service.dto.response.filter.Pagination;
 import com.huy.linguahub.service.dto.response.filter.ResultPaginationDTO;
-import com.huy.linguahub.service.dto.response.user.CreateUserDTO;
-import com.huy.linguahub.service.dto.response.user.GetUserDTO;
-import com.huy.linguahub.service.dto.response.user.UpdateUserDTO;
+import com.huy.linguahub.service.dto.response.user.ResCreateUserDTO;
+import com.huy.linguahub.service.dto.response.user.ResGetUserDTO;
+import com.huy.linguahub.service.dto.response.user.ResUpdateUserDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,15 +20,19 @@ import java.util.stream.Collectors;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository,
+                       PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    public CreateUserDTO createUser(User reqUser) {
+    public ResCreateUserDTO createUser(User reqUser) {
+        reqUser.setPassword(this.passwordEncoder.encode(reqUser.getPassword()));
         User savedUser = this.userRepository.save(reqUser);
 
-        return CreateUserDTO.builder()
+        return ResCreateUserDTO.builder()
                 .id(savedUser.getId())
                 .email(savedUser.getEmail())
                 .firstName(savedUser.getFirstName())
@@ -41,7 +46,7 @@ public class UserService {
                 .build();
     }
 
-    public UpdateUserDTO updateUser(User userDB, User reqUser) {
+    public ResUpdateUserDTO updateUser(User userDB, User reqUser) {
 
         userDB.setFirstName(reqUser.getFirstName());
         userDB.setLastName(reqUser.getLastName());
@@ -51,7 +56,7 @@ public class UserService {
         userDB.setImageUrl(reqUser.getImageUrl());
         User savedUser = this.userRepository.save(userDB);
 
-        return UpdateUserDTO.builder()
+        return ResUpdateUserDTO.builder()
                 .id(savedUser.getId())
                 .email(savedUser.getEmail())
                 .firstName(savedUser.getFirstName())
@@ -74,7 +79,7 @@ public class UserService {
         pagination.setTotalPages(users.getTotalPages());
         pagination.setTotalElements(users.getTotalElements());
 
-        List<GetUserDTO> usersDTO = users.getContent().stream()
+        List<ResGetUserDTO> usersDTO = users.getContent().stream()
                 .map(this::toGetUserDTO)
                 .collect(Collectors.toList());
 
@@ -85,14 +90,14 @@ public class UserService {
         return resultPaginationDTO;
     }
 
-    public GetUserDTO getUserById(Long id) {
+    public ResGetUserDTO getUserById(Long id) {
         User userDB = this.userRepository.findById(id).orElseThrow();
 
         return toGetUserDTO(userDB);
     }
 
-    public GetUserDTO toGetUserDTO(User user) {
-        return GetUserDTO.builder()
+    public ResGetUserDTO toGetUserDTO(User user) {
+        return ResGetUserDTO.builder()
                 .id(user.getId())
                 .email(user.getEmail())
                 .firstName(user.getFirstName())

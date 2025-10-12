@@ -1,9 +1,10 @@
-package com.huy.linguahub.web.rest.errors;
+package com.huy.linguahub.controller.error;
 
-import com.huy.linguahub.service.dto.response.error.ErrorDTO;
+import com.huy.linguahub.service.dto.response.error.ResErrorDTO;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -15,14 +16,15 @@ import java.util.List;
 public class GlobalException {
 
     @ExceptionHandler({ResourceAlreadyExistsException.class,
-            ResourceNotFoundException.class})
-    public ResponseEntity<ErrorDTO> handleResourceAlreadyExists(Exception ex, HttpServletRequest request) {
-        ErrorDTO errorDTO = mapErrorDTO(ex, request);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDTO);
+            ResourceNotFoundException.class,
+            UsernameNotFoundException.class})
+    public ResponseEntity<ResErrorDTO> handleAllExceptions(Exception ex, HttpServletRequest request) {
+        ResErrorDTO resErrorDTO = mapErrorDTO(ex, request);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(resErrorDTO);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorDTO> handleValidationExceptions(
+    public ResponseEntity<ResErrorDTO> handleValidationExceptions(
             MethodArgumentNotValidException ex, HttpServletRequest request) {
 
         List<String> errors = ex.getBindingResult()
@@ -33,7 +35,7 @@ public class GlobalException {
 
         Object message = errors.size() == 1 ? errors.getFirst() : errors;
 
-        ErrorDTO errorDTO = ErrorDTO.builder()
+        ResErrorDTO resErrorDTO = ResErrorDTO.builder()
                 .timestamp(Instant.now())
                 .status(HttpStatus.BAD_REQUEST.value())
                 .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
@@ -41,11 +43,11 @@ public class GlobalException {
                 .path(request.getRequestURI())
                 .build();
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDTO);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(resErrorDTO);
     }
 
-    public ErrorDTO mapErrorDTO(Exception ex, HttpServletRequest request) {
-        return ErrorDTO.builder()
+    public ResErrorDTO mapErrorDTO(Exception ex, HttpServletRequest request) {
+        return ResErrorDTO.builder()
                 .timestamp(Instant.now())
                 .status(HttpStatus.BAD_REQUEST.value())
                 .error(HttpStatus.BAD_REQUEST.getReasonPhrase())

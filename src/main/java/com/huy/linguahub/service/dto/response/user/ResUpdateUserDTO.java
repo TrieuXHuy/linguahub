@@ -10,7 +10,7 @@ import java.time.Instant;
 @Getter
 @Setter
 @Builder
-public class UpdateUserDTO {
+public class ResUpdateUserDTO {
     private Long id;
     private String email;
     private String firstName;

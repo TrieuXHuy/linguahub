@@ -10,7 +10,7 @@ import java.time.Instant;
 @Getter
 @Setter
 @Builder
-public class GetUserDTO {
+public class ResCreateUserDTO {
     private Long id;
     private String email;
     private String firstName;
@@ -21,6 +21,4 @@ public class GetUserDTO {
     private String imageUrl;
     private String createdBy;
     private Instant createdDate;
-    private String lastModifiedBy;
-    private Instant lastModifiedDate;
 }

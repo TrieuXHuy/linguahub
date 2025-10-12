@@ -1,4 +1,4 @@
-package com.huy.linguahub.web.rest.errors;
+package com.huy.linguahub.controller.error;
 
 public class ResourceAlreadyExistsException extends Exception{
     public ResourceAlreadyExistsException(String message) {
