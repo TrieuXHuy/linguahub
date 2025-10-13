@@ -1,8 +1,9 @@
 package com.huy.linguahub.service;
 
+import com.huy.linguahub.domain.User;
 import com.huy.linguahub.secutiry.SecurityUtils;
+import com.huy.linguahub.service.dto.response.auth.ResUserTokenDTO;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.jwt.JwsHeader;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
@@ -24,7 +25,12 @@ public class AuthenticateService {
         this.jwtEncoder = jwtEncoder;
     }
 
-    public String createToken(Authentication authentication) {
+    public String createToken(String email, User userDB) {
+        ResUserTokenDTO userTokenDTO = new ResUserTokenDTO();
+
+        userTokenDTO.setId(userDB.getId());
+        userTokenDTO.setEmail(userDB.getEmail());
+        userTokenDTO.setFullName(userDB.getFirstName() + " " + userDB.getLastName());
 
         Instant now = Instant.now();
         Instant validity = now.plus(this.accessTokenExpiration, ChronoUnit.SECONDS);
@@ -33,8 +39,8 @@ public class AuthenticateService {
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuedAt(now)
                 .expiresAt(validity)
-                .subject(authentication.getName())
-                .claim("authentication", authentication)
+                .subject(email)
+                .claim("user", userTokenDTO)
                 .build();
 
         JwsHeader jwsHeader = JwsHeader.with(SecurityUtils.JWT_ALGORITHM).build();

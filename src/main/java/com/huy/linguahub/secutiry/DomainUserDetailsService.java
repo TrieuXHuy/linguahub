@@ -22,7 +22,7 @@ public class DomainUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         com.huy.linguahub.domain.User userDB = this.userRepository.findByEmail(username);
-        if(userDB == null) {
+        if(userDB == null || userDB.isDeleted()) {
             throw new UsernameNotFoundException("User/Password not invalid");
         }
         return new User(

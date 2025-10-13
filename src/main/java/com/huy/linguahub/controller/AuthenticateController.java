@@ -47,13 +47,7 @@ public class AuthenticateController {
         // Set authentication to SecurityContext (used later in controllers, services,..)
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        String accessToken = authenticateService.createToken(authentication);
-
         ResLoginDTO loginDTO = new ResLoginDTO();
-        loginDTO.setAccessToken(accessToken);
-        loginDTO.setTokenType("Bearer");
-        loginDTO.setExpiresIn(accessTokenExpiration);
-
         User userDB = this.userService.getUserByUsername(authentication.getName());
 
         if(userDB != null) {
@@ -62,7 +56,14 @@ public class AuthenticateController {
             userLoginDTO.setEmail(userDB.getEmail());
             userLoginDTO.setFullName(userDB.getFirstName() + " " + userDB.getLastName());
             loginDTO.setUser(userLoginDTO);
+
+            String accessToken = authenticateService.createToken(authentication.getName(), userDB);
+            loginDTO.setAccessToken(accessToken);
         }
+
+        loginDTO.setTokenType("Bearer");
+        loginDTO.setExpiresIn(accessTokenExpiration);
+
         return ResponseEntity.ok(loginDTO);
     }
 }
