@@ -54,19 +54,19 @@ public class UserService {
         userDB.setAge(reqUser.getAge());
         userDB.setAddress(reqUser.getAddress());
         userDB.setImageUrl(reqUser.getImageUrl());
-        User savedUser = this.userRepository.save(userDB);
+        User updatedUser = this.userRepository.save(userDB);
 
         return ResUpdateUserDTO.builder()
-                .id(savedUser.getId())
-                .email(savedUser.getEmail())
-                .firstName(savedUser.getFirstName())
-                .lastName(savedUser.getLastName())
-                .gender(savedUser.getGender())
-                .age(savedUser.getAge())
-                .address(savedUser.getAddress())
-                .imageUrl(savedUser.getImageUrl())
-                .lastModifiedBy(savedUser.getLastModifiedBy())
-                .lastModifiedDate(savedUser.getLastModifiedDate())
+                .id(updatedUser.getId())
+                .email(updatedUser.getEmail())
+                .firstName(updatedUser.getFirstName())
+                .lastName(updatedUser.getLastName())
+                .gender(updatedUser.getGender())
+                .age(updatedUser.getAge())
+                .address(updatedUser.getAddress())
+                .imageUrl(updatedUser.getImageUrl())
+                .lastModifiedBy(updatedUser.getLastModifiedBy())
+                .lastModifiedDate(updatedUser.getLastModifiedDate())
                 .build();
     }
 

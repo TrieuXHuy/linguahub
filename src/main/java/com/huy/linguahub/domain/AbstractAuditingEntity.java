@@ -1,6 +1,7 @@
 package com.huy.linguahub.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.huy.linguahub.secutiry.SecurityUtils;
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.PrePersist;
@@ -39,17 +40,18 @@ public abstract class AbstractAuditingEntity<T> {
 
     @PrePersist
     public void prePersist() {
-        this.createdBy = "system";
+        this.createdBy = SecurityUtils.getCurrentUserLogin().orElse("system");
+
         this.createdDate = Instant.now();
     }
 
     @PreUpdate
     public void preUpdate() {
-        this.lastModifiedBy = "system";
+        this.lastModifiedBy = SecurityUtils.getCurrentUserLogin().orElse("system");
         this.lastModifiedDate = Instant.now();
 
         if (this.deleted && this.deletedDate == null) {
-            this.deletedBy = "system";
+            this.deletedBy = SecurityUtils.getCurrentUserLogin().orElse("system");
             this.deletedDate = Instant.now();
         }
     }

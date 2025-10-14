@@ -21,9 +21,10 @@ public class User extends AbstractAuditingEntity<Long>{
 
     @NotBlank(message = "Email must not be blank!")
     @Pattern(regexp = Constants.LOGIN_REGEX, message = "Invalid email")
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String email;
 
+    @Column(nullable = false)
     @NotBlank(message = "Password must not be blank!")
     private String password;
 
